@@ -122,7 +122,7 @@ def draw_players():
 
     for pos, radius, width in positions:
         pygame.draw.circle(screen, (0, 0, 0), pos, radius, width)
-
+        
 def draw_defense(defense):
     for pos, radius, width in defense:
         pygame.draw.circle(screen, (200, 0, 0), pos, radius, width)
@@ -133,9 +133,9 @@ def draw_routes():
             continue
         start = positions[i][0]
         points = [start] + route
-        pygame.draw.lines(screen, (0, 0, 255), False, points, 3)
+        pygame.draw.lines(screen, (173,216,230), False, points, 3)
         for pt in route:
-            pygame.draw.circle(screen, (0, 0, 255), pt, 5)
+            pygame.draw.circle(screen, (173,216,230), pt, 5)
 
 # === Game State ===
 show_nickel = False
