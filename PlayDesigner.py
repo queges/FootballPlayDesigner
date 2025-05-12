@@ -165,35 +165,36 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            x, y = event.pos
+        elif event.type == pygame.KEYDOWN:
+            x, y = pygame.mouse.get_pos()
+
 
             # Defense buttons
-            if pygame.Rect(1300, 120, 100, 50).collidepoint(event.pos):
+            if pygame.Rect(1300, 120, 100, 50).collidepoint(pygame.mouse.get_pos()):
                 show_nickel = True
                 show_four_four = False
                 show_four_three = False
                 show_three_four = False
 
-            elif pygame.Rect(1300, 200, 100, 50).collidepoint(event.pos):
+            elif pygame.Rect(1300, 200, 100, 50).collidepoint(pygame.mouse.get_pos()):
                 show_nickel = False
                 show_four_four = False
                 show_four_three = True
                 show_three_four = False
             
-            elif pygame.Rect(1300, 280, 100, 50).collidepoint(event.pos):
+            elif pygame.Rect(1300, 280, 100, 50).collidepoint(pygame.mouse.get_pos()):
                 show_nickel = False
                 show_four_four = False
                 show_four_three = False
                 show_three_four = True
             
-            elif pygame.Rect(1300, 360, 100, 50).collidepoint(event.pos):
+            elif pygame.Rect(1300, 360, 100, 50).collidepoint(pygame.mouse.get_pos()):
                 show_nickel = False
                 show_four_four = True
                 show_four_three = False
                 show_three_four = False
 
-            elif event.button == 1:  # Left click
+            elif event.key == pygame.K_a:
                 if drawing_route and selected_player is not None:
                     current_route.append((x, y))
                 else:
@@ -204,7 +205,8 @@ while running:
                             drag_index = i
                             break
 
-            elif event.button == 3:  # Right click
+            elif event.key == pygame.K_r:
+                x, y = pygame.mouse.get_pos()
                 if not drawing_route:
                     for i, (pos, radius, width) in enumerate(positions):
                         dx, dy = x - pos[0], y - pos[1]
@@ -220,8 +222,8 @@ while running:
                     selected_player = None
                     current_route = []
 
-        elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_a:
                 dragging = False
                 drag_index = None
 
