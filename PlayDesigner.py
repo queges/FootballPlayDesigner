@@ -8,7 +8,7 @@ running = True
 # === Field Drawing ===
 def draw_football_field(surface):
     surface.fill((0, 100, 0))
-    pygame.draw.rect(surface, (255, 255, 255), (250, 50, 1000, 700), 10)
+    pygame.draw.rect(surface, (255, 255, 255), (250, 50, 1000, 1000), 10)
     for i in range(0, 700, 150):
         pygame.draw.line(surface, (255, 255, 255), (250, 50 + i), (1250, 50 + i), 2)
 
@@ -66,6 +66,42 @@ four_three_defense = [
     ((750, 480), 14, 6)   # FS
 ]
 
+# === 3-4 Defense ===
+three_four_defense = [
+    # D-Line
+    ((805, 630), 14, 6),  # LE
+    ((760, 630), 14, 6),  # DT
+    ((720, 630), 14, 6),  # RE
+    # Linebackers
+    ((675, 630), 14, 6),  # ROLB
+    ((700, 580), 14, 6),  # MLB
+    ((810, 580), 14, 6),  # MLB
+    ((850, 630), 14, 6),  # LOLB
+    # Secondary
+    ((550, 600), 14, 6),  # SS
+    ((1100, 530), 14, 6), # CB
+    ((400, 530), 14, 6),  # CB
+    ((750, 480), 14, 6)   # FS
+]
+
+# === 4-4 Defense ===
+four_four_defense = [
+    # D-Line
+    ((810, 630), 14, 6),  # LE
+    ((770, 630), 14, 6),  # DT
+    ((730, 630), 14, 6),  # DT
+    ((690, 630), 14, 6),  # RE
+    # Linebackers
+    ((650, 630), 14, 6),  # ROLB
+    ((700, 580), 14, 6),  # MLB
+    ((810, 580), 14, 6),  # MLB
+    ((850, 630), 14, 6),  # LOLB
+    # Secondary
+    ((1100, 530), 14, 6), # CB
+    ((400, 530), 14, 6),  # CB
+    ((750, 480), 14, 6)   # FS
+]
+
 # === Routes Storage ===
 routes = [[] for _ in positions]
 drawing_route = False
@@ -79,6 +115,10 @@ def draw_players():
     screen.blit(font.render("Nickel", True, (255, 255, 255)), (1310, 130))
     pygame.draw.rect(screen, (0, 128, 255), (1300, 200, 100, 50))
     screen.blit(font.render("4-3", True, (255, 255, 255)), (1320, 210))
+    pygame.draw.rect(screen, (0, 128, 255), (1300, 280, 100, 50))
+    screen.blit(font.render("3-4", True, (255, 255, 255)), (1320, 290))
+    pygame.draw.rect(screen, (0, 128, 255), (1300, 360, 100, 50))
+    screen.blit(font.render("4-4", True, (255, 255, 255)), (1320, 370))
 
     for pos, radius, width in positions:
         pygame.draw.circle(screen, (0, 0, 0), pos, radius, width)
@@ -100,6 +140,8 @@ def draw_routes():
 # === Game State ===
 show_nickel = False
 show_four_three = False
+show_three_four = False
+show_four_four = False
 dragging = False
 drag_index = None
 
@@ -114,6 +156,10 @@ while running:
         draw_defense(nickel_defense)
     elif show_four_three:
         draw_defense(four_three_defense)
+    elif show_three_four:
+        draw_defense(three_four_defense)
+    elif show_four_four:
+        draw_defense(four_four_defense)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -125,11 +171,27 @@ while running:
             # Defense buttons
             if pygame.Rect(1300, 120, 100, 50).collidepoint(event.pos):
                 show_nickel = True
+                show_four_four = False
                 show_four_three = False
+                show_three_four = False
 
             elif pygame.Rect(1300, 200, 100, 50).collidepoint(event.pos):
-                show_four_three = True
                 show_nickel = False
+                show_four_four = False
+                show_four_three = True
+                show_three_four = False
+            
+            elif pygame.Rect(1300, 280, 100, 50).collidepoint(event.pos):
+                show_nickel = False
+                show_four_four = False
+                show_four_three = False
+                show_three_four = True
+            
+            elif pygame.Rect(1300, 360, 100, 50).collidepoint(event.pos):
+                show_nickel = False
+                show_four_four = True
+                show_four_three = False
+                show_three_four = False
 
             elif event.button == 1:  # Left click
                 if drawing_route and selected_player is not None:
