@@ -102,6 +102,12 @@ four_four_defense = [
     ((750, 480), 14, 6)   # FS
 ]
 
+# === Motion Storage ===
+motions = [[] for _ in positions]
+drawing_motion = False
+current_motion = []
+selected_player = None
+
 # === Routes Storage ===
 routes = [[] for _ in positions]
 drawing_route = False
@@ -131,11 +137,38 @@ def draw_routes():
     for i, route in enumerate(routes):
         if not route:
             continue
-        start = positions[i][0]
-        points = [start] + route
+        route_start = positions[i][0]
+        points = [route_start] + route
         pygame.draw.lines(screen, (173,216,230), False, points, 3)
         for pt in route:
             pygame.draw.circle(screen, (173,216,230), pt, 5)
+
+def draw_motion():
+    for i, motion in enumerate(motions):
+        if not motion:
+            continue
+
+        motion_start = positions[i][0]
+        points = [motion_start] + motion
+
+        for j in range(len(points) - 1):
+            start_point = points[j]
+            end_point = points[j + 1]
+            dist = pygame.math.Vector2(end_point[0] - start_point[0], end_point[1] - start_point[1]).length()
+            dash_count = int(dist / 10)
+
+            for k in range(dash_count):
+                x1 = start_point[0] + (end_point[0] - start_point[0]) * (k / dash_count)
+                y1 = start_point[1] + (end_point[1] - start_point[1]) * (k / dash_count)
+                x2 = start_point[0] + (end_point[0] - start_point[0]) * ((k + 1) / dash_count)
+                y2 = start_point[1] + (end_point[1] - start_point[1]) * ((k + 1) / dash_count)
+
+                if k % 2 == 0:
+                    pygame.draw.line(screen, (173, 216, 230), (x1, y1), (x2, y2), 3)
+
+        for pt in points:
+            pygame.draw.circle(screen, (173, 216, 230), pt, 5)
+
 
 # === Game State ===
 show_nickel = False
@@ -151,6 +184,7 @@ while running:
     draw_football_field(screen)
     draw_players()
     draw_routes()
+    draw_motion()
 
     if show_nickel:
         draw_defense(nickel_defense)
@@ -197,10 +231,13 @@ while running:
             elif event.key == pygame.K_a:
                 if drawing_route and selected_player is not None:
                     current_route.append((x, y))
+                elif drawing_motion and selected_player is not None:
+                    current_motion.append((x, y))
                 else:
                     for i, (pos, radius, width) in enumerate(positions):
                         dx, dy = x - pos[0], y - pos[1]
                         if (dx**2 + dy**2)**0.5 <= radius:
+                            selected_player = i
                             dragging = True
                             drag_index = i
                             break
@@ -217,10 +254,27 @@ while running:
                             break
                 else:
                     if selected_player is not None:
-                        routes[selected_player] = current_route[:]
+                        routes[selected_player] = current_route
                     drawing_route = False
                     selected_player = None
                     current_route = []
+
+            elif event.key == pygame.K_m:
+                x, y = pygame.mouse.get_pos()
+                if not drawing_motion:
+                    for i, (pos, radius, width) in enumerate(positions):
+                        dx, dy = x - pos[0], y - pos[1]
+                        if (dx**2 + dy**2)**0.5 <= radius:
+                            drawing_motion = True
+                            selected_player = i 
+                            current_motion = [pos]
+                            break
+                else:
+                    if selected_player is not None:
+                        motions[selected_player] = current_motion
+                    drawing_motion = False
+                    selected_player = None
+                    current_motion = []
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
