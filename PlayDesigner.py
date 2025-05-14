@@ -102,6 +102,18 @@ four_four_defense = [
     ((750, 480), 14, 6)   # FS
 ]
 
+# === Cover 3 ===
+cov_three_defense = [
+    ((750, 250), 140, 6),
+    ((450, 250), 140, 6),
+    ((1050, 250), 140, 6),
+
+    ((625, 500), 100, 6),
+    ((875, 500), 100, 6),
+    ((375, 550), 100, 6),
+    ((1125, 550), 100, 6)
+]
+
 # === Motion Storage ===
 motions = [[] for _ in positions]
 drawing_motion = False
@@ -117,14 +129,16 @@ selected_player = None
 # === Draw Players ===
 def draw_players():
     font = pygame.font.Font(None, 36)
-    pygame.draw.rect(screen, (0, 128, 255), (1300, 120, 100, 50))
+    pygame.draw.rect(screen, (0, 128, 255), (1300, 120, 150, 50))
     screen.blit(font.render("Nickel", True, (255, 255, 255)), (1310, 130))
-    pygame.draw.rect(screen, (0, 128, 255), (1300, 200, 100, 50))
+    pygame.draw.rect(screen, (0, 128, 255), (1300, 200, 150, 50))
     screen.blit(font.render("4-3", True, (255, 255, 255)), (1320, 210))
-    pygame.draw.rect(screen, (0, 128, 255), (1300, 280, 100, 50))
+    pygame.draw.rect(screen, (0, 128, 255), (1300, 280, 150, 50))
     screen.blit(font.render("3-4", True, (255, 255, 255)), (1320, 290))
-    pygame.draw.rect(screen, (0, 128, 255), (1300, 360, 100, 50))
+    pygame.draw.rect(screen, (0, 128, 255), (1300, 360, 150, 50))
     screen.blit(font.render("4-4", True, (255, 255, 255)), (1320, 370))
+    pygame.draw.rect(screen, (0, 128, 255), (1300, 440, 150, 50))
+    screen.blit(font.render("Cover 3", True, (255, 255, 255)), (1320, 450))
 
     for pos, radius, width in positions:
         pygame.draw.circle(screen, (0, 0, 0), pos, radius, width)
@@ -147,7 +161,7 @@ def draw_motion():
     for i, motion in enumerate(motions):
         if not motion:
             continue
-
+            
         motion_start = positions[i][0]
         points = [motion_start] + motion
 
@@ -175,6 +189,7 @@ show_nickel = False
 show_four_three = False
 show_three_four = False
 show_four_four = False
+show_cov_three = False
 dragging = False
 drag_index = None
 
@@ -194,6 +209,8 @@ while running:
         draw_defense(three_four_defense)
     elif show_four_four:
         draw_defense(four_four_defense)
+    elif show_cov_three:
+        draw_defense(cov_three_defense)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -225,6 +242,13 @@ while running:
             elif pygame.Rect(1300, 360, 100, 50).collidepoint(pygame.mouse.get_pos()):
                 show_nickel = False
                 show_four_four = True
+                show_four_three = False
+                show_three_four = False
+
+            elif pygame.Rect(1300, 440, 100, 50).collidepoint(pygame.mouse.get_pos()):
+                show_cov_three = True
+                show_nickel = False
+                show_four_four =False
                 show_four_three = False
                 show_three_four = False
 
