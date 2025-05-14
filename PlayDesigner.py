@@ -104,14 +104,14 @@ four_four_defense = [
 
 # === Cover 3 ===
 cov_three_defense = [
-    ((750, 250), 140, 6),
-    ((450, 250), 140, 6),
-    ((1050, 250), 140, 6),
+    ((750, 250), 140, 3),
+    ((450, 250), 140, 3),
+    ((1050, 250), 140, 3),
 
-    ((625, 500), 100, 6),
-    ((875, 500), 100, 6),
-    ((375, 550), 100, 6),
-    ((1125, 550), 100, 6)
+    ((625, 500), 100, 3),
+    ((875, 500), 100, 3),
+    ((375, 550), 100, 3),
+    ((1125, 550), 100, 3)
 ]
 
 # === Motion Storage ===
@@ -129,6 +129,12 @@ selected_player = None
 # === Draw Players ===
 def draw_players():
     font = pygame.font.Font(None, 36)
+
+    pygame.draw.rect(screen, (0, 128, 255), (1300, 40, 150, 50))
+    screen.blit(font.render("No Defense", True, (255, 255, 255)), (1310, 50))
+    pygame.draw.rect(screen, (0, 128, 255), (50, 40, 150, 50))
+    screen.blit(font.render("Clear Offense", True, (255, 255, 255)), (60, 50))
+
     pygame.draw.rect(screen, (0, 128, 255), (1300, 120, 150, 50))
     screen.blit(font.render("Nickel", True, (255, 255, 255)), (1310, 130))
     pygame.draw.rect(screen, (0, 128, 255), (1300, 200, 150, 50))
@@ -221,31 +227,42 @@ while running:
 
 
             # Defense buttons
-            if pygame.Rect(1300, 120, 100, 50).collidepoint(pygame.mouse.get_pos()):
+            if pygame.Rect(100, 40, 150, 50). collidepoint(pygame.mouse.get_pos()):
+                routes = [[] for _ in positions]
+                motions = [[] for _ in positions]
+
+            elif pygame.Rect(1300, 40, 150, 50). collidepoint(pygame.mouse.get_pos()):
+                show_cov_three = False
+                show_nickel = False
+                show_four_four = False
+                show_four_three = False
+                show_three_four = False
+
+            elif pygame.Rect(1300, 120, 150, 50).collidepoint(pygame.mouse.get_pos()):
                 show_nickel = True
                 show_four_four = False
                 show_four_three = False
                 show_three_four = False
 
-            elif pygame.Rect(1300, 200, 100, 50).collidepoint(pygame.mouse.get_pos()):
+            elif pygame.Rect(1300, 200, 150, 50).collidepoint(pygame.mouse.get_pos()):
                 show_nickel = False
                 show_four_four = False
                 show_four_three = True
                 show_three_four = False
             
-            elif pygame.Rect(1300, 280, 100, 50).collidepoint(pygame.mouse.get_pos()):
+            elif pygame.Rect(1300, 280, 150, 50).collidepoint(pygame.mouse.get_pos()):
                 show_nickel = False
                 show_four_four = False
                 show_four_three = False
                 show_three_four = True
             
-            elif pygame.Rect(1300, 360, 100, 50).collidepoint(pygame.mouse.get_pos()):
+            elif pygame.Rect(1300, 360, 150, 50).collidepoint(pygame.mouse.get_pos()):
                 show_nickel = False
                 show_four_four = True
                 show_four_three = False
                 show_three_four = False
 
-            elif pygame.Rect(1300, 440, 100, 50).collidepoint(pygame.mouse.get_pos()):
+            elif pygame.Rect(1300, 440, 150, 50).collidepoint(pygame.mouse.get_pos()):
                 show_cov_three = True
                 show_nickel = False
                 show_four_four =False
