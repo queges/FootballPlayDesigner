@@ -231,26 +231,28 @@ def draw_motion():
         points = [motion_start] + motion
 
         for j in range(len(points) - 1):
-            start_point = points[j]
-            end_point = points[j + 1]
-            dist = pygame.math.Vector2(end_point[0] - start_point[0], end_point[1] - start_point[1]).length()
-            dash_count = int(dist / 10)
+            start = pygame.math.Vector2(points[j])
+            end = pygame.math.Vector2(points[j + 1])
+            direction = end - start
+            length = direction.length()
+            if direction.length() == 0:
+                continue
+            direction = direction.normalize()
 
-            for k in range(dash_count):
-                x1 = start_point[0] + (end_point[0] - start_point[0]) * (k / dash_count)
-                y1 = start_point[1] + (end_point[1] - start_point[1]) * (k / dash_count)
-                x2 = start_point[0] + (end_point[0] - start_point[0]) * ((k + 1) / dash_count)
-                y2 = start_point[1] + (end_point[1] - start_point[1]) * ((k + 1) / dash_count)
 
-                if k % 2 == 0:
-                    pygame.draw.line(screen, (173, 216, 230), (x1, y1), (x2, y2), 3)
+            dash_length = 10
+            num_dashes = int(length // dash_length)
+
+            for k in range(0, num_dashes, 2):  # skip every second to make a dashed pattern
+                dash_start = start + direction * (k * dash_length)
+                dash_end = start + direction * ((k + 1) * dash_length)
+                pygame.draw.line(screen, (173, 216, 230), dash_start, dash_end, 3)
 
         for pt in points:
             pygame.draw.circle(screen, (173, 216, 230), pt, 5)
 
         pygame.draw.circle(screen, (173, 216, 230), motion[0], 14, 6)
         positions[i] = [(motion[-1][0], motion[-1][1]), positions[i][1], positions[i][2]]
-
 
 # === Game State ===
 show_nickel = False
