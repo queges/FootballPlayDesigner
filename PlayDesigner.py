@@ -230,9 +230,9 @@ def draw_motion():
         motion_start = positions[i][0]
         points = [motion_start] + motion
 
-        for j in range(len(points) - 1):
-            start = pygame.math.Vector2(points[j])
-            end = pygame.math.Vector2(points[j + 1])
+        for j in range(len(motion) - 1):
+            start = pygame.math.Vector2(motion[j])
+            end = pygame.math.Vector2(motion[j + 1])
             direction = end - start
             length = direction.length()
             if direction.length() == 0:
