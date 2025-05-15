@@ -15,7 +15,7 @@ def draw_football_field(surface):
 # === Offensive Positions ===
 positions = [
     # O-Line
-    ((750, 660), 14, 6),  # C
+    ((750, 660), 0, 0),  # C
     ((720, 662), 14, 6),  # LG
     ((780, 662), 14, 6),  # RG
     ((810, 664), 14, 6),  # RT
@@ -27,6 +27,48 @@ positions = [
     ((400, 664), 14, 6),  # X
     ((1100, 664), 14, 6),  # Z
     ((545, 675), 14, 6),  # H
+    ((840, 675), 14, 6)   # Y
+]
+
+shotgun = [
+    # Backfield
+    ((750, 730), 14, 6),  # QB
+    ((710, 730), 14, 6),  # RB
+]
+
+pistol = [
+    # Backfield
+    ((750, 720), 14, 6),  # QB
+    ((750, 760), 14, 6),  # RB
+]
+
+singleback = [
+    # Backfield
+    ((750, 690), 14, 6),  # QB
+    ((750, 750), 14, 6),  # RB
+]
+
+ten_pers = [
+    #Reiciver
+    ((400, 664), 14, 6),  # X
+    ((1100, 664), 14, 6),  # Z
+    ((545, 675), 14, 6),  # H
+    ((955, 675), 14, 6)   # Y
+]
+
+eleven_pers = [
+    #Reiciver
+    ((400, 664), 14, 6),  # X
+    ((1100, 664), 14, 6),  # Z
+    ((545, 675), 14, 6),  # H
+    ((840, 675), 14, 6)   # Y
+]
+
+twelve_pers = [
+    #Reiciver
+    ((400, 664), 14, 6),  # X
+    ((1100, 664), 14, 6),  # Z
+    ((660, 675), 14, 6),  # H
     ((840, 675), 14, 6)   # Y
 ]
 
@@ -130,10 +172,26 @@ selected_player = None
 def draw_players():
     font = pygame.font.Font(None, 36)
 
+    screen.blit(font.render("A: Action button / Move players draw routes/motions |R: Start/Finish Route |M: Start/Finish Motion |Any Key to use Buttons", True, (255, 255, 255)), (10, 10))
+
     pygame.draw.rect(screen, (0, 128, 255), (1300, 40, 150, 50))
     screen.blit(font.render("No Defense", True, (255, 255, 255)), (1310, 50))
-    pygame.draw.rect(screen, (0, 128, 255), (50, 40, 150, 50))
+    pygame.draw.rect(screen, (0, 128, 255), (50, 40, 180, 50))
     screen.blit(font.render("Clear Offense", True, (255, 255, 255)), (60, 50))
+
+    pygame.draw.rect(screen, (0, 128, 255), (50, 120, 180, 50))
+    screen.blit(font.render("Shotgun", True, (255, 255, 255)), (60, 130))
+    pygame.draw.rect(screen, (0, 128, 255), (50, 200, 180, 50))
+    screen.blit(font.render("Pistol", True, (255, 255, 255)), (60, 210))
+    pygame.draw.rect(screen, (0, 128, 255), (50, 280, 180, 50))
+    screen.blit(font.render("Singleback", True, (255, 255, 255)), (60, 290))
+
+    pygame.draw.rect(screen, (0, 128, 255), (50, 360, 180, 50))
+    screen.blit(font.render("10 Pers", True, (255, 255, 255)), (60, 370))
+    pygame.draw.rect(screen, (0, 128, 255), (50, 440, 180, 50))
+    screen.blit(font.render("11 Pers", True, (255, 255, 255)), (60, 450))
+    pygame.draw.rect(screen, (0, 128, 255), (50, 520, 180, 50))
+    screen.blit(font.render("12 Pers", True, (255, 255, 255)), (60, 530))
 
     pygame.draw.rect(screen, (0, 128, 255), (1300, 120, 150, 50))
     screen.blit(font.render("Nickel", True, (255, 255, 255)), (1310, 130))
@@ -148,6 +206,7 @@ def draw_players():
 
     for pos, radius, width in positions:
         pygame.draw.circle(screen, (0, 0, 0), pos, radius, width)
+        pygame.draw.rect(screen, (0, 0, 0), (736, 646, 28, 28), 6)
         
 def draw_defense(defense):
     for pos, radius, width in defense:
@@ -227,7 +286,7 @@ while running:
 
 
             # Defense buttons
-            if pygame.Rect(100, 40, 150, 50). collidepoint(pygame.mouse.get_pos()):
+            if pygame.Rect(50, 40, 180, 50). collidepoint(pygame.mouse.get_pos()):
                 routes = [[] for _ in positions]
                 motions = [[] for _ in positions]
 
@@ -237,6 +296,37 @@ while running:
                 show_four_four = False
                 show_four_three = False
                 show_three_four = False
+
+            elif pygame.Rect(50, 120, 180, 50).collidepoint(pygame.mouse.get_pos()):
+                positions[5] = shotgun[0]
+                positions[6] = shotgun[1]
+
+            elif pygame.Rect(50, 200, 180, 50).collidepoint(pygame.mouse.get_pos()):
+                positions[5] = pistol[0]
+                positions[6] = pistol[1]
+
+            elif pygame.Rect(50, 280, 180, 50).collidepoint(pygame.mouse.get_pos()):
+                positions[5] = singleback[0]
+                positions[6] = singleback[1]
+
+            elif pygame.Rect(50, 360, 180, 50).collidepoint(pygame.mouse.get_pos()):
+                positions[7] = ten_pers[0]
+                positions[8] = ten_pers[1]
+                positions[9] = ten_pers[2]
+                positions[10] = ten_pers[3]
+
+            elif pygame.Rect(50, 440, 180, 50).collidepoint(pygame.mouse.get_pos()):
+                positions[7] = eleven_pers[0]
+                positions[8] = eleven_pers[1]
+                positions[9] = eleven_pers[2]
+                positions[10] = eleven_pers[3]
+
+            elif pygame.Rect(50, 520, 180, 50).collidepoint(pygame.mouse.get_pos()):
+                positions[7] = twelve_pers[0]
+                positions[8] = twelve_pers[1]
+                positions[9] = twelve_pers[2]
+                positions[10] = twelve_pers[3]
+
 
             elif pygame.Rect(1300, 120, 150, 50).collidepoint(pygame.mouse.get_pos()):
                 show_nickel = True
