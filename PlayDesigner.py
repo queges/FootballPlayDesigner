@@ -248,6 +248,9 @@ def draw_motion():
         for pt in points:
             pygame.draw.circle(screen, (173, 216, 230), pt, 5)
 
+        pygame.draw.circle(screen, (173, 216, 230), motion[0], 14, 6)
+        positions[i] = [(motion[-1][0], motion[-1][1]), positions[i][1], positions[i][2]]
+
 
 # === Game State ===
 show_nickel = False
