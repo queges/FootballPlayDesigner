@@ -5,6 +5,11 @@ screen = pygame.display.set_mode((1500, 800), pygame.RESIZABLE)
 clock = pygame.time.Clock()
 running = True
 
+font = pygame.font.Font(None, 32)
+input_box = pygame.Rect(300, 20, 200, 32)
+input_active = False
+user_text = ""
+
 # === Field Drawing ===
 def draw_football_field(surface):
     surface.fill((0, 100, 0))
@@ -29,6 +34,8 @@ positions = [
     ((545, 675), 14, 6),  # H
     ((840, 675), 14, 6)   # Y
 ]
+
+saves = []
 
 shotgun = [
     # Backfield
@@ -204,6 +211,11 @@ def draw_players():
     pygame.draw.rect(screen, (0, 128, 255), (1300, 440, 150, 50))
     screen.blit(font.render("Cover 3", True, (255, 255, 255)), (1320, 450))
 
+    pygame.draw.rect(screen, (255, 128, 0), (1300, 720, 150, 50))
+    screen.blit(font.render("Save Play", True, (255, 255, 255)), (1320, 730))
+    pygame.draw.rect(screen, (255, 128, 0), (50, 720, 150, 50))
+    screen.blit(font.render("Load Plays", True, (255, 255, 255)), (60, 730))
+
     for pos, radius, width in positions:
         pygame.draw.circle(screen, (0, 0, 0), pos, radius, width)
         pygame.draw.rect(screen, (0, 0, 0), (736, 646, 28, 28), 6)
@@ -254,6 +266,40 @@ def draw_motion():
         pygame.draw.circle(screen, (173, 216, 230), motion[0], 14, 6)
         positions[i] = [(motion[-1][0], motion[-1][1]), positions[i][1], positions[i][2]]
 
+def draw_preview(screen, save, x, y, scale=0.3):
+    positions = save["positions"]
+    routes = save["routes"]
+    motions = save["motions"]
+
+    for i, (pos, _, _) in enumerate(positions):
+        px = x + pos[0] * scale
+        py = y + pos[1] * scale
+        pygame.draw.circle(screen, (0, 255, 0), (int(px), int(py)), 4)
+
+        # Define bounding box size
+        box_width = 300
+        box_height = 150
+
+        # Draw background and border
+        pygame.draw.rect(screen, (50, 50, 50), (x + 75, y + 100, box_width, box_height), 2)
+
+        # Draw route lines for this player
+        route = routes[i]
+        if route:
+            for j in range(len(route) - 1):
+                start = (x + route[j][0] * scale, y + route[j][1] * scale)
+                end = (x + route[j + 1][0] * scale, y + route[j + 1][1] * scale)
+                pygame.draw.line(screen, (0, 200, 255), start, end, 2)
+
+        # Draw motion lines for this player in different color
+        motion = motions[i]
+        if motion:
+            for j in range(len(motion) - 1):
+                start = (x + motion[j][0] * scale, y + motion[j][1] * scale)
+                end = (x + motion[j + 1][0] * scale, y + motion[j + 1][1] * scale)
+                pygame.draw.line(screen, (255, 100, 100), start, end, 2)
+
+
 # === Game State ===
 show_nickel = False
 show_four_three = False
@@ -262,6 +308,8 @@ show_four_four = False
 show_cov_three = False
 dragging = False
 drag_index = None
+
+load_plays = False
 
 # === Main Game Loop ===
 while running:
@@ -281,21 +329,53 @@ while running:
         draw_defense(four_four_defense)
     elif show_cov_three:
         draw_defense(cov_three_defense)
+    elif load_plays:
+        screen.fill((0, 100, 0))
+        for i, save in enumerate(saves):
+            preview_x = 20
+            preview_y = 20 + i * 175  # space between previews
+            draw_preview(screen, save, preview_x, preview_y)
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                for i, save in enumerate(saves):
+                    preview_x = 20
+                    preview_y = 20 + i * 175  # make sure this spacing matches your drawing
+                    preview_width = 300
+                    preview_height = 150
+
+                    rect = pygame.Rect(preview_x + 75, preview_y + 100, preview_width, preview_height)
+                    pygame.draw.rect(screen, (255, 255, 255), rect, 2)  # debug: draw preview box
+
+                    if rect.collidepoint((x, y)):
+                        positions = save["positions"].copy()
+                        routes = [r.copy() for r in save["routes"]]
+                        motions = [m.copy() for m in save["motions"]]
+                        load_plays = False
+                        break
+
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        elif event.type == pygame.KEYDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
 
 
             # Defense buttons
-            if pygame.Rect(50, 40, 180, 50). collidepoint(pygame.mouse.get_pos()):
-                routes = [[] for _ in positions]
-                motions = [[] for _ in positions]
+            if pygame.Rect(50, 40, 180, 50).collidepoint(pygame.mouse.get_pos()):
+                routes = [[] for r in positions]
+                motions = [[] for m in positions]
 
-            elif pygame.Rect(1300, 40, 150, 50). collidepoint(pygame.mouse.get_pos()):
+            elif pygame.Rect(1300, 720, 150, 50).collidepoint(pygame.mouse.get_pos()):
+                saves.append({"positions": positions.copy(), "routes": [r.copy() for r in routes], "motions": [m.copy() for m in motions]})
+
+            elif pygame.Rect(50, 720, 150, 50).collidepoint(pygame.mouse.get_pos()):
+                load_plays = True
+
+            elif pygame.Rect(1300, 40, 150, 50).collidepoint(pygame.mouse.get_pos()):
                 show_cov_three = False
                 show_nickel = False
                 show_four_four = False
@@ -363,6 +443,8 @@ while running:
                 show_four_four =False
                 show_four_three = False
                 show_three_four = False
+
+            
 
             elif event.key == pygame.K_a:
                 if drawing_route and selected_player is not None:
