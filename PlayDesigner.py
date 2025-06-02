@@ -1,4 +1,6 @@
 import pygame
+import os 
+import json
 
 pygame.init()
 screen = pygame.display.set_mode((1500, 800), pygame.RESIZABLE)
@@ -36,6 +38,18 @@ positions = [
 ]
 
 saves = []
+
+if os.path.exists("saves.json"):
+    with open("saves.json", "r") as f:
+        data = json.load(f)
+        saves = [
+            {
+                "positions": [tuple(p) for p in save["positions"]],
+                "routes": save["routes"],
+                "motions": save["motions"]
+            }
+            for save in data
+        ]
 
 shotgun = [
     # Backfield
@@ -175,6 +189,21 @@ drawing_route = False
 current_route = []
 selected_player = None
 
+def save_to_file():
+    with open("saves.json", "w") as f:
+        json.dump(convert_for_json(saves), f)
+
+
+def convert_for_json(saves):
+    return [
+        {
+            "positions": [list(pos) for pos in save["positions"]],
+            "routes": save["routes"],
+            "motions": save["motions"]
+        }
+        for save in saves
+    ]
+
 # === Draw Players ===
 def draw_players():
     font = pygame.font.Font(None, 36)
@@ -311,6 +340,8 @@ drag_index = None
 
 load_plays = False
 
+mouse_down = False
+
 # === Main Game Loop ===
 while running:
     screen.fill((0, 0, 0))
@@ -331,28 +362,51 @@ while running:
         draw_defense(cov_three_defense)
     elif load_plays:
         screen.fill((0, 100, 0))
+        pygame.draw.rect(screen, (0, 128, 255), (50, 40, 180, 50))
+        screen.blit(font.render("Go Back", True, (255, 255, 255)), (60, 50))
+
+        if pygame.Rect(50, 40, 180, 50).collidepoint((x, y)):
+            load_plays = False
+
         for i, save in enumerate(saves):
-            preview_x = 20
-            preview_y = 20 + i * 175  # space between previews
+            row = i % 3
+            col = i // 3
+            preview_x = col * 350
+            preview_y = row * 175
+            preview_width = 300
+            preview_height = 150
             draw_preview(screen, save, preview_x, preview_y)
+
+            pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(preview_x + 75, preview_y + 100, preview_width, preview_height), 2)  # debug: draw preview box
+            pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(preview_x + 380, preview_y + 100, 30, 30))
             
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and not mouse_down:
+                mouse_down = True
                 x, y = pygame.mouse.get_pos()
+
                 for i, save in enumerate(saves):
-                    preview_x = 20
-                    preview_y = 20 + i * 175  # make sure this spacing matches your drawing
+                    row = i % 3
+                    col = i // 3
+                    preview_x = col * 350
+                    preview_y = row * 175
                     preview_width = 300
                     preview_height = 150
 
-                    rect = pygame.Rect(preview_x + 75, preview_y + 100, preview_width, preview_height)
-                    pygame.draw.rect(screen, (255, 255, 255), rect, 2)  # debug: draw preview box
+                    if pygame.Rect(preview_x + 380, preview_y + 100, 30, 30).collidepoint((x, y)):
+                        del saves[i]
+                        save_to_file()
 
-                    if rect.collidepoint((x, y)):
+                    elif pygame.Rect(preview_x + 75, preview_y + 100, preview_width, preview_height).collidepoint((x, y)):
                         positions = save["positions"].copy()
                         routes = [r.copy() for r in save["routes"]]
                         motions = [m.copy() for m in save["motions"]]
+
+                        save_to_file()
+
                         load_plays = False
                         break
+            elif event.type == pygame.MOUSEBUTTONUP:
+                mouse_down = False
 
 
 
@@ -444,9 +498,10 @@ while running:
                 show_four_three = False
                 show_three_four = False
 
-            
+        elif event.type == pygame.KEYDOWN:
+            x, y = pygame.mouse.get_pos()
 
-            elif event.key == pygame.K_a:
+            if event.key == pygame.K_a:
                 if drawing_route and selected_player is not None:
                     current_route.append((x, y))
                 elif drawing_motion and selected_player is not None:
