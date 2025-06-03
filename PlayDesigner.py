@@ -208,7 +208,7 @@ def convert_for_json(saves):
 def draw_players():
     font = pygame.font.Font(None, 36)
 
-    screen.blit(font.render("A: Action button / Move players draw routes/motions |R: Start/Finish Route |M: Start/Finish Motion |Any Key to use Buttons", True, (255, 255, 255)), (10, 10))
+    screen.blit(font.render("[A]: Action button / Move players draw routes/motions [R]: Start/Finish Route [M]: Start/Finish Motion [Mouse] to use Buttons", True, (255, 255, 255)), (10, 10))
 
     pygame.draw.rect(screen, (0, 128, 255), (1300, 40, 150, 50))
     screen.blit(font.render("No Defense", True, (255, 255, 255)), (1310, 50))
