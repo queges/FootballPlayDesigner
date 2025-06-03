@@ -401,8 +401,6 @@ while running:
                         routes = [r.copy() for r in save["routes"]]
                         motions = [m.copy() for m in save["motions"]]
 
-                        save_to_file()
-
                         load_plays = False
                         break
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -425,6 +423,7 @@ while running:
 
             elif pygame.Rect(1300, 720, 150, 50).collidepoint(pygame.mouse.get_pos()):
                 saves.append({"positions": positions.copy(), "routes": [r.copy() for r in routes], "motions": [m.copy() for m in motions]})
+                save_to_file()
 
             elif pygame.Rect(50, 720, 150, 50).collidepoint(pygame.mouse.get_pos()):
                 load_plays = True
